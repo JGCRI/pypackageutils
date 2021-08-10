@@ -12,14 +12,14 @@ import pkg_resources
 import tempfile
 import unittest
 
-from im3py.process_step import process_step
+from pypackageutils.process_step import process_step
 
 
 class TestProcessStep(unittest.TestCase):
     """Tests for the `ReadConfig` class that reads the input configuration from the user."""
 
     # expected attribute values
-    OUTPUT_DIR = pkg_resources.resource_filename('im3py', 'tests/data')
+    OUTPUT_DIR = pkg_resources.resource_filename('pypackageutils', 'tests/data')
     START_STEP = 2015
     THROUGH_STEP = 2016
     TIME_STEP = 1
@@ -27,7 +27,7 @@ class TestProcessStep(unittest.TestCase):
     BETA_PARAM = 1.42
 
     # comparison outputs
-    OUTPUT_2015 = pkg_resources.resource_filename('im3py', 'tests/data/comp_data/output_year_2015.txt')
+    OUTPUT_2015 = pkg_resources.resource_filename('pypackageutils', 'tests/data/comp_data/output_year_2015.txt')
 
     @classmethod
     def create_output_directory(cls):

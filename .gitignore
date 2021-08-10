@@ -1,5 +1,10 @@
+# egg
+pypackageutils.egg-info
+dist
+build
+
 # test outupts
-im3py/tests/data/outputs/*.*
+pypackageutils/tests/data/outputs/*.*
 
 # pycharm
 .idea

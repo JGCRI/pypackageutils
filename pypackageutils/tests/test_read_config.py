@@ -11,17 +11,17 @@ import pkg_resources
 import tempfile
 import unittest
 
-from im3py.read_config import ReadConfig
+from pypackageutils.read_config import ReadConfig
 
 
 class TestReadConfig(unittest.TestCase):
     """Tests for the `ReadConfig` class that reads the input configuration from the user."""
 
     # test config YAML file
-    CONFIG_YAML = pkg_resources.resource_filename('im3py', 'tests/data/inputs/config.yml')
+    CONFIG_YAML = pkg_resources.resource_filename('pypackageutils', 'tests/data/inputs/config.yml')
 
     # existing directory
-    REAL_DIRPATH = pkg_resources.resource_filename('im3py', 'tests/data')
+    REAL_DIRPATH = pkg_resources.resource_filename('pypackageutils', 'tests/data')
 
     # expected attribute values
     START_STEP = 2015

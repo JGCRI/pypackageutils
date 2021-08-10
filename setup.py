@@ -1,12 +1,3 @@
-"""Setup file for <your model name>
-
-:author:   Chris R. Vernon
-:email:    chris.vernon@pnnl.gov
-
-License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
-
-"""
-
 from setuptools import setup, find_packages
 
 
@@ -15,21 +6,21 @@ def readme():
         return f.read()
 
 
-def get_requirements():
-    with open('requirements.txt') as f:
-        return f.read().split()
-
-
 setup(
-    name='im3py',
+    name='pypackageutils',
     version='0.1.0',
     packages=find_packages(),
-    url='https://github.com/IMMM-SFA/im3py.git',
+    url='https://github.com/JGCRI/pypackageutils.git',
     license='BSD 2-Clause',
     author='Chris R. Vernon',
     author_email='chris.vernon@pnnl.gov',
-    description='A template Python model for IM3.',
+    description='Common utilities used in Python modeling software packages',
     long_description=readme(),
+    long_description_content_type="text/markdown",
     python_requires='>=3.6.*, <4',
-    install_requires=get_requirements()
+    install_requires=[
+        "requests~=2.20.0",
+        "pandas~=1.2.4"
+    ],
+    include_package_data=True
 )

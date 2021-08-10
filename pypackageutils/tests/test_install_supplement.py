@@ -5,7 +5,7 @@ import unittest
 
 import pandas as pd
 
-from im3py.install_supplement import InstallSupplement
+from pypackageutils.install_supplement import InstallSupplement
 
 
 class TestInstallSupplement(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestInstallSupplement(unittest.TestCase):
     REMOTE_DATA_FILE = 'test_no-header.csv'
 
     # comparison datasets
-    COMP_CSV = pkg_resources.resource_filename('im3py', 'tests/data/comp_data/test_no-header.csv')
+    COMP_CSV = pkg_resources.resource_filename('pypackageutils', 'tests/data/comp_data/test_no-header.csv')
 
     def test_fetch_and_unpack(self):
 

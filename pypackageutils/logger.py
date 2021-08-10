@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from im3py.read_config import ReadConfig
+from pypackageutils.read_config import ReadConfig
 
 
 class Logger(ReadConfig):

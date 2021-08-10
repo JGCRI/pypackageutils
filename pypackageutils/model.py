@@ -11,10 +11,10 @@ import logging
 import os
 import time
 
-import im3py.process_step as proc
+import pypackageutils.process_step as proc
 
 # Logger inherits ReadConfig
-from im3py.logger import Logger
+from pypackageutils.logger import Logger
 
 
 class Model(Logger):
@@ -50,12 +50,12 @@ class Model(Logger):
     Examples:
 
         # Option 1:  run model for all steps by passing a configuration YAML as the sole argument
-        >>> from im3py.model import Model
+        >>> from pypackageutils.model import Model
         >>> run = Model(config_file="<path to your config file with the file name and extension.>")
         >>> run.run_all_steps()
 
         # Option 2:  run model for all steps by passing argument values
-        >>> from im3py.model import Model
+        >>> from pypackageutils.model import Model
         >>> run = Model(output_directory="<output directory path>",
         >>>                 start_step=2015,
         >>>                 through_step=2030,
@@ -65,7 +65,7 @@ class Model(Logger):
         >>> run.run_all_steps()
 
         # Option 3:  run model by year by passing argument values and updating them between time steps.
-        >>> from im3py.model import Model
+        >>> from pypackageutils.model import Model
         >>> run = Model(output_directory="<output directory path>",
         >>>                 start_step=2015,
         >>>                 through_step=2030,

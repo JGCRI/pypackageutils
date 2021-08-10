@@ -9,7 +9,7 @@ License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
 
 import unittest
 
-import im3py.some_code as fake
+import pypackageutils.some_code as fake
 
 
 class TestSomeCode(unittest.TestCase):

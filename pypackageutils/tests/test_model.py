@@ -12,21 +12,21 @@ import pkg_resources
 import tempfile
 import unittest
 
-from im3py.model import Model
+from pypackageutils.model import Model
 
 
 class TestModel(unittest.TestCase):
     """Tests for the `ReadConfig` class that reads the input configuration from the user."""
 
     # test config YAML file
-    CONFIG_YAML = pkg_resources.resource_filename('im3py', 'tests/data/inputs/config.yml')
+    CONFIG_YAML = pkg_resources.resource_filename('pypackageutils', 'tests/data/inputs/config.yml')
 
     # comparison outputs
-    OUTPUT_2015 = pkg_resources.resource_filename('im3py', 'tests/data/comp_data/output_year_2015.txt')
-    OUTPUT_2016 = pkg_resources.resource_filename('im3py', 'tests/data/comp_data/output_year_2016.txt')
+    OUTPUT_2015 = pkg_resources.resource_filename('pypackageutils', 'tests/data/comp_data/output_year_2015.txt')
+    OUTPUT_2016 = pkg_resources.resource_filename('pypackageutils', 'tests/data/comp_data/output_year_2016.txt')
 
     # expected attribute values
-    OUTPUT_DIR = pkg_resources.resource_filename('im3py', "tests/data")
+    OUTPUT_DIR = pkg_resources.resource_filename('pypackageutils', "tests/data")
     START_STEP = 2015
     THROUGH_STEP = 2016
     TIME_STEP = 1
@@ -42,7 +42,7 @@ class TestModel(unittest.TestCase):
                      alpha_param=TestModel.ALPHA_PARAM,
                      beta_param=TestModel.BETA_PARAM)
 
-        self.assertEqual(f"{type(run)}", "<class 'im3py.model.Model'>")
+        self.assertEqual(f"{type(run)}", "<class 'pypackageutils.model.Model'>")
 
     def test_model_outputs(self):
         """Ensure model outputs are what is expected."""

@@ -26,7 +26,7 @@ class InstallSupplement:
 
     """
 
-    PACKAGE_NAME = 'im3py'
+    PACKAGE_NAME = 'pypackageutils'
 
     # URL for DOI minted example data hosted on Zenodo
     DATA_VERSION_URLS = {'0.1.0': 'https://zenodo.org/record/3856417/files/test.zip?download=1'}

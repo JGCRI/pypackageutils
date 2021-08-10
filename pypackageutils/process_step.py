@@ -10,7 +10,7 @@ License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
 import logging
 import time
 
-import im3py.some_code as fake
+import pypackageutils.some_code as fake
 
 
 def process_step(step, alpha_param, beta_param, start_step, output_directory):
