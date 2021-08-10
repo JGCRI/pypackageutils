@@ -1,7 +1,7 @@
 
 
 # pypackageutils
-Common utilities used  in R modeling software packages
+Common utilities used in Python modeling software packages
 
 ## Installation
 
