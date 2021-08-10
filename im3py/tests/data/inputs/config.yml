@@ -1,0 +1,8 @@
+# Test configuration file
+
+start_step: 2015
+through_step: 2016
+time_step: 1
+alpha_param: 2.0
+beta_param: 1.42
+write_logfile: False

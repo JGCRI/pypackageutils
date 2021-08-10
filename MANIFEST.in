@@ -1,0 +1,2 @@
+include im3py/tests/data/comp_data/*
+include im3py/tests/data/inputs/*
