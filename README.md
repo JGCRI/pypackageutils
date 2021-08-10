@@ -1,4 +1,5 @@
-
+[![build](https://github.com/JGCRI/pypackageutils/actions/workflows/build.yml/badge.svg)](https://github.com/JGCRI/pypackageutils/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/JGCRI/pypackageutils/branch/master/graph/badge.svg?token=VLNPBO7T2U)](https://codecov.io/gh/JGCRI/pypackageutils)
 
 # pypackageutils
 Common utilities used in Python modeling software packages
