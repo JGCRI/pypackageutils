@@ -1,3 +1,4 @@
+import re
 from setuptools import setup, find_packages
 
 
@@ -5,10 +6,16 @@ def readme():
     with open('README.md') as f:
         return f.read()
 
+def get_requirements():
+    """Return a list of package requirements from the requirements.txt file."""
+    with open('requirements.txt') as f:
+        return f.read().split()
+        
+version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('pypackageutils/__init__.py').read(), re.M).group(1)
 
 setup(
     name='pypackageutils',
-    version='0.1.0',
+    version=version,
     packages=find_packages(),
     url='https://github.com/JGCRI/pypackageutils.git',
     license='BSD 2-Clause',
