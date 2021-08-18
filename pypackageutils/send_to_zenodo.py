@@ -11,13 +11,19 @@ import os
 import requests
 
 
-def send_to_zenodo(access_token):
+def send_to_zenodo(access_token = None,
+                   delete = False,
+                   id = None):
     """Get the sum from a list of values.
 
     :param access_token:                  Access token to Zenodo Community
     :type access_token:                   str
 
-    :return:                              int
+    :param delete:                  Delete a given id number deposition on Zenodo
+    :type delete:                   bool
+
+    :param delete:                  id of Zenodo deposition to edit or delete
+    :type delete:                   str
 
     """
 
@@ -25,11 +31,29 @@ def send_to_zenodo(access_token):
     headers = {"Content-Type": "application/json"}
     params = {'access_token': access_token}
 
-    r = requests.post('https://zenodo.org/api/deposit/depositions',
-                      params=params,
-                      json={},
-                      headers=headers)
+    # Create new entry
+    if (delete == False) and (id==None):
+        r = requests.post('https://zenodo.org/api/deposit/depositions',
+                          params=params,
+                          json={},
+                          headers=headers)
 
-    r.status_code
+        print(r.status_code)
 
-    return(r.status_code)
+        # Get id and doi from temporary upload
+        id = str(r.json()["id"])
+        doi = str(r.json()["metadata"]["prereserve_doi"]["doi"])
+
+    # If delete == TRUE & id != NONE
+    if (delete == True) and (id != None):
+        r = requests.delete('https://zenodo.org/api/deposit/depositions/' + id,
+                            params=params)
+        print(f'Deleted object with id#: {id}')
+        doi = None
+
+    # Create return dictionary
+    return_dict = dict()
+    return_dict['id'] = id
+    return_dict['doi'] = doi
+
+    return return_dict
