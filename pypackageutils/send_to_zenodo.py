@@ -68,6 +68,11 @@ def send_to_zenodo(access_token = None,
                 metadata['title']='Untitled'
             else:
                 metadata['title']=metadata_existing['title']
+        # Check that title is not blank
+        else:
+            if metadata['title']=='':
+                metadata['title']='Untitled'
+
 
         # if metadata does not have upload_type set defaults
         if "upload_type" not in list(metadata.keys()):
@@ -75,6 +80,15 @@ def send_to_zenodo(access_token = None,
                 metadata['upload_type']='other'
             else:
                 metadata['upload_type']=metadata_existing['upload_type']
+        # Check that output_type is one of the valid entries
+        else:
+            # List of valid upload types: https://developers.zenodo.org/#representation
+            upload_type_valid = ['publication','poster','presentation','dataset','image',
+                                 'video','software','lesson','physicalobject','other']
+            if metadata['upload_type'] in upload_type_valid:
+                print(f'upload_type must be one of #: {upload_type_valid} with given metadata.')
+                print(f'Changing upload_type to other.')
+                metadata['upload_type']='other'
 
         # if metadata does not have description set defaults
         if "description" not in list(metadata.keys()):
@@ -82,9 +96,10 @@ def send_to_zenodo(access_token = None,
                 metadata['description'] = 'Description.'
             else:
                 metadata['description'] = metadata_existing['description']
-
-        # Check that title and description are not blank
-        # Check that output_type is one of the valid entries
+        # Check that description is not blank
+        else:
+            if metadata['description'] == '':
+                metadata['description'] = 'Untitled'
 
         # If it is a dictionary append the elements to params
         data = {
