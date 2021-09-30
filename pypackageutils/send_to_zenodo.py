@@ -38,7 +38,7 @@ def upload_zenodo_record(access_token = None,
                        headers=headers)
 
     if r1.status_code > 210:
-        print("Error happened during submission, status code: " + str(r.status_code))
+        print("Error happened during submission, status code: " + str(r1.status_code))
         return 
 
     # Get id and doi from temporary upload
@@ -72,16 +72,17 @@ def upload_zenodo_record(access_token = None,
         } 
 
     # Get files to upload: 
-    files = {'file': open(path_to_data, 'rb')}
+    if path_to_data is not None: 
+        files = {'file': open(path_to_data, 'rb')}
 
-    # Upload the file or folder
-    r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
-                       params=params,
-                       data = data, 
-                       files = files)
-    # put in status code check
+        # Upload the file or folder
+        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
+                        params=params,
+                        data = data, 
+                        files = files)
+        # put in status code check
                         
-        # Add metadata
+    # Add metadata
     r3 = requests.put('https://zenodo.org/api/deposit/depositions/%s' % id,
                       params=params, data=json.dumps(data),
                       headers=headers) 
@@ -110,7 +111,10 @@ def delete_zenodo_record(access_token = None,
 
 def update_zenodo_record(access_token = None, 
                          id = None, 
-                         metadata = None):
+                         metadata = None, 
+                         path_to_data = None):
+
+    # how do file updates work? 
 
     # Connect to Zenodo
     headers = {"Content-Type": "application/json"}
@@ -173,14 +177,25 @@ def update_zenodo_record(access_token = None,
     }
 
     # Now update the metadata for the deposition id
-    r = requests.put('https://zenodo.org/api/deposit/depositions/%s' % id,
+    r1 = requests.put('https://zenodo.org/api/deposit/depositions/%s' % id,
                      params = {'access_token': access_token},
                      data = json.dumps(data),
                      headers = headers)
 
     # Get id and doi
-    id = str(r.json()["id"])
-    doi = str(r.json()["metadata"]["prereserve_doi"]["doi"])
+    id = str(r1.json()["id"])
+    doi = str(r1.json()["metadata"]["prereserve_doi"]["doi"])
+
+    # Get files to upload: 
+    if path_to_data is not None: 
+        files = {'file': open(path_to_data, 'rb')}
+
+        # Upload the file or folder
+        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
+                        params=params,
+                        data = data, 
+                        files = files)
+        # put in status code check
 
      # Create return dictionary
     return_dict = dict()
