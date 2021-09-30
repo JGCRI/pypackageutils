@@ -160,16 +160,16 @@ def update_zenodo_record(access_token = None,
             print(f'Changing upload_type to other.')
             metadata['upload_type']='other'
 
-        # if metadata does not have description set defaults
-        if "description" not in list(metadata.keys()):
-            if "description" not in list(metadata_existing.keys()):
-                metadata['description'] = 'Description.'
-            else:
-                metadata['description'] = metadata_existing['description']
-        # Check that description is not blank
+    # if metadata does not have description set defaults
+    if "description" not in list(metadata.keys()):
+        if "description" not in list(metadata_existing.keys()):
+            metadata['description'] = 'Description.'
         else:
-            if metadata['description'] == '':
-                metadata['description'] = 'Untitled'
+            metadata['description'] = metadata_existing['description']
+    # Check that description is not blank
+    else:
+        if metadata['description'] == '':
+            metadata['description'] = 'Untitled'
 
     # Append the elements to params
     data = {
