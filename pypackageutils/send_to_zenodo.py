@@ -7,9 +7,7 @@ License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
 
 """
 
-import requests
-import json
-import csv
+import requests, json, csv
 
 def upload_zenodo_record(access_token = None,
                          path_to_data = None,
@@ -114,8 +112,6 @@ def update_zenodo_record(access_token = None,
                          metadata = None, 
                          path_to_data = None):
 
-    # how do file updates work? 
-
     # Connect to Zenodo
     headers = {"Content-Type": "application/json"}
     params = {'access_token': access_token}
@@ -181,21 +177,21 @@ def update_zenodo_record(access_token = None,
                      params = {'access_token': access_token},
                      data = json.dumps(data),
                      headers = headers)
+    #Add status code check
+
+    # This adds new files. Does not replace existing files
+    if path_to_data is not None: 
+        files = {'file': open(path_to_data, 'rb')}
+        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
+                           params=params,
+                           data = data, 
+                           files = files)
+        r2.json()
+    #Add status code check
 
     # Get id and doi
     id = str(r1.json()["id"])
     doi = str(r1.json()["metadata"]["prereserve_doi"]["doi"])
-
-    # Get files to upload: 
-    if path_to_data is not None: 
-        files = {'file': open(path_to_data, 'rb')}
-
-        # Upload the file or folder
-        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
-                        params=params,
-                        data = data, 
-                        files = files)
-        # put in status code check
 
      # Create return dictionary
     return_dict = dict()
@@ -205,4 +201,14 @@ def update_zenodo_record(access_token = None,
     return return_dict
 
 #def publish_zenodo_record(access_token = None, 
-#                           id = None):
+#                          id = None):
+
+def get_zenodo_record(access_token = None,
+                      queries = None,
+                      id = None):
+
+    r = requests.get('https://zenodo.org/api/deposit/depositions',
+                     params={'access_token': access_token, 
+                              'q' : queries})
+
+    print(json.dumps(r.json(), indent=2))
