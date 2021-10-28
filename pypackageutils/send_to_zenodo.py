@@ -214,7 +214,18 @@ def update_zenodo_record(access_token = None,
 
     # This adds new files. Does not replace existing files
     if path_to_data is not None: 
-        files = {'file': open(path_to_data, 'rb')}
+        if os.path.isfile(path_to_data):
+            files = {'file': open(path_to_data, 'rb')} 
+        # If path is a folder, zip it first
+        elif os.path.isdir(path_to_data): 
+            shutil.make_archive(path_to_data, "zip", path_to_data) # Zip
+            files = {'file': open(path_to_data+".zip", 'rb')}
+        else:
+            print("Not valid data")
+            # Delete existing record that we made earlier
+            delete_zenodo_record(access_token, id)
+            return
+
         r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
                            params=params,
                            data = data, 
