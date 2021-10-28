@@ -46,6 +46,7 @@ def upload_zenodo_record(access_token = None,
 
     # Get ID from successful upload
     id = str(r1.json()["id"])
+    doi = str(r1.json()["doi"])
 
     # Get files to upload
     if path_to_data is not None: 
@@ -112,7 +113,7 @@ def upload_zenodo_record(access_token = None,
     if r3.status_code > 210:
         print("Metadata not uploaded correctly, status code: " + str(r3.status_code))
         # print error message r3.json() w/ it?
-        # Do we want to delete existing record here if the metadat upload part fails?
+        # Do we want to delete existing record here if the metadata upload part fails?
         return 
 
     # Create return dictionary
