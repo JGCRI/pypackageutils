@@ -46,7 +46,7 @@ def upload_zenodo_record(access_token = None,
 
     # Get ID from successful upload
     id = str(r1.json()["id"])
-    doi = str(r1.json()["doi"])
+    doi = str(r1.json()["metadata"]["prereserve_doi"]["doi"])
 
     # Get files to upload
     if path_to_data is not None: 
@@ -64,8 +64,8 @@ def upload_zenodo_record(access_token = None,
     else:
         print("No data provided")
         # Delete existing record that we made earlier
-        delete_zenodo_record(access_token, id)
-        return
+        # delete_zenodo_record(access_token, id)
+        # return
 
     # Process metadata if it exists
     if (metadata != None):
@@ -92,16 +92,17 @@ def upload_zenodo_record(access_token = None,
     data = {'metadata': metadata}
 
     # Upload the file or zipped folder
-    r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
-                        params=params,
-                        data = data, 
-                        files = files)   
-    # Check that upload worked               
-    if r2.status_code > 210:
-        print("Error happened during submission, status code: " + str(r2.status_code))
-        # Delete existing record that we made earlier
-        delete_zenodo_record(access_token, id)   
-        return 
+    if path_to_data is not None:
+        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
+                            params=params,
+                            data = data,
+                            files = files)
+        # Check that upload worked
+        if r2.status_code > 210:
+            print("Error happened during submission, status code: " + str(r2.status_code))
+            # Delete existing record that we made earlier
+            delete_zenodo_record(access_token, id)
+            return
 
     # TEST UPLOADING MULTIPLE FILES
                         
@@ -120,6 +121,8 @@ def upload_zenodo_record(access_token = None,
     return_dict = dict()
     return_dict['id'] = id
     return_dict['doi'] = doi
+
+    print("upload_zenodo_record complete.")
 
     return return_dict
 
