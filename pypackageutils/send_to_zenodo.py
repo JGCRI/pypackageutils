@@ -2,23 +2,32 @@
 
 This script allows users to send up files to the JGCRI community on Zenodo.
 
-:author:   Chris Vernon
-:email:    chris.vernon@pnnl.gov
+:author:   Zarrar Khan and Ellie Lochner
+:email:    zarrar.khan@pnnl.gov
 
 License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
 
 """
 
-import requests, json, csv, os, shutil
+# TODO
+    # Check if we can upload multiple files
+    # path_to_data and metadata are optional in upload function. Need to specify this?
+    # upload function: If metadata upload (r2) fails should we bail out of function?
+    # Delete and update functions: Should ID be str?
+
+import requests
+import json
+import csv
+import os 
+import shutil
 
 def upload_zenodo_record(access_token = None,
                          path_to_data = None,
                          metadata = None):
     """Upload deposition to Zenodo.
 
-    If data to upload is a directry, this function will zip it first, 
-    otherwise just upload the single file with the correspondeing metadata
-    #Q: can it upload a list of files/ 
+    If data to upload is a directory, this function will zip it first, 
+    otherwise just upload the single file with the corresponding metadata
 
     :param access_token: Access token to Zenodo Community
     :type access_token: str
@@ -38,34 +47,16 @@ def upload_zenodo_record(access_token = None,
                        params=params,
                        json={},
                        headers=headers)
+                       
     # Check that upload worked
     if r1.status_code > 210:
-        print("Error happened during submission, status code: " + str(r1.status_code))
-        # Print r1.json() to get message as well if it exists?
-        return 
+        print("Error happened during submission") # Print error messages and status code
+        r1.json() 
+        return  # If we can't do the initial upload, exit function
 
-    # Get ID from successful upload
+    # Get ID and DOI from successful upload
     id = str(r1.json()["id"])
     doi = str(r1.json()["metadata"]["prereserve_doi"]["doi"])
-
-    # Get files to upload
-    if path_to_data is not None: 
-        if os.path.isfile(path_to_data):
-            files = {'file': open(path_to_data, 'rb')} 
-        # If path is a folder, zip it first
-        elif os.path.isdir(path_to_data): 
-            shutil.make_archive(path_to_data, "zip", path_to_data) # Zip
-            files = {'file': open(path_to_data+".zip", 'rb')}
-        else:
-            print("Not valid data")
-            # Delete existing record that we made earlier
-            delete_zenodo_record(access_token, id)
-            return
-    else:
-        print("No data provided")
-        # Delete existing record that we made earlier
-        # delete_zenodo_record(access_token, id)
-        # return
 
     # Process metadata if it exists
     if (metadata != None):
@@ -79,43 +70,61 @@ def upload_zenodo_record(access_token = None,
         # Return error if metadata exists but is not a path to a CSV or dictionary 
         elif type(metadata) != dict: 
             print("Wrong metadata format. Needs to be path to csv or dictionary")
-
-            # Delete existing record that we made earlier
+            # Delete existing record that we made earlier and exit function
             delete_zenodo_record(access_token, id)
             return
-
+            
+    # If metadata was not provided, set default metadata
     else: 
-        # If metadata was not provided, set default metadata
         metadata = {'title': 'Untitled', 'description': 'Description.', 'upload_type': 'other'} 
+        print("No metadata provided. Setting to default metadata.")
 
     # Append metadata to data object
     data = {'metadata': metadata}
+                    
+    # Add metadata to initial upload
+    r2 = requests.put('https://zenodo.org/api/deposit/depositions/%s' % id,
+                      params=params, 
+                      data=json.dumps(data),
+                      headers=headers) 
 
-    # Upload the file or zipped folder
-    if path_to_data is not None:
+    # Check that upload worked. If it did not, print error message but continue function
+    if r2.status_code > 210:
+        print("Error: Metadata not uploaded correctly")
+        r2.json()
+
+    # Get files to upload if provided
+    if path_to_data is not None: 
+        # If path_to_data is a file, read it in
+        if os.path.isfile(path_to_data):
+            files = {'file': open(path_to_data, 'rb')} 
+        # If path_to_data is a directory, zip it first and then read it in
+        elif os.path.isdir(path_to_data): 
+            shutil.make_archive(path_to_data, "zip", path_to_data) # Zip
+            files = {'file': open(path_to_data+".zip", 'rb')}
+        # If path_to_data is neither a file or directory, delete initial upload and exit function
+        else:
+            print("Data in path_to_data must be either a file or folder")
+            # Delete existing record that we made earlier and exit function
+            delete_zenodo_record(access_token, id)
+            return
+
+        # Upload the file or zipped folder
         r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
                             params=params,
                             data = data,
                             files = files)
+
         # Check that upload worked
         if r2.status_code > 210:
             print("Error happened during submission, status code: " + str(r2.status_code))
-            # Delete existing record that we made earlier
+            # Delete existing record that we made earlier and exit function
             delete_zenodo_record(access_token, id)
             return
 
-    # TEST UPLOADING MULTIPLE FILES
-                        
-    # Add metadata
-    r3 = requests.put('https://zenodo.org/api/deposit/depositions/%s' % id,
-                      params=params, data=json.dumps(data),
-                      headers=headers) 
-    # Check that upload worked
-    if r3.status_code > 210:
-        print("Metadata not uploaded correctly, status code: " + str(r3.status_code))
-        # print error message r3.json() w/ it?
-        # Do we want to delete existing record here if the metadata upload part fails?
-        return 
+    # If no data provided, print a message but continue with function because users can add data to deposition later
+    else:
+        print("No upload data provided")
 
     # Create return dictionary
     return_dict = dict()
@@ -129,15 +138,34 @@ def upload_zenodo_record(access_token = None,
 
 def delete_zenodo_record(access_token = None, 
                          id = None):
+    """Delete existing Zenodo record.
 
+    Can only delete unpublished records
+
+    :param access_token: Access token to Zenodo Community
+    :type access_token: str
+
+    :param id: Unique zenodo record ID (can be found in URL)
+    :type id: str
+
+
+    """
     params = {'access_token': access_token}
 
+    # Delete record based on ID provided
     r = requests.delete('https://zenodo.org/api/deposit/depositions/' + id,
                         params=params)
+
+    # Check status code to see if record was successfully deleted
+    # If incorrect code, exit function
     if r.status_code == 204:
-        print(f'Successfully deleted object with id#: {id}')
-    #Add error if status code not 204
+        print(f'Deleted object with id#: {id}')
+    else:
+        print("Could not delete record")
         return
+    
+    print("delete_zenodo_record complete.")
+    return
 
 
 def update_zenodo_record(access_token = None, 
@@ -210,7 +238,11 @@ def update_zenodo_record(access_token = None,
                      params = {'access_token': access_token},
                      data = json.dumps(data),
                      headers = headers)
-    #Add status code check
+    # Check that upload worked. If it did not, print error message but continue function
+    if r1.status_code > 210:
+        print("Error: Metadata not uploaded correctly")
+        r1.json()
+
 
     # This adds new files. Does not replace existing files
     if path_to_data is not None: 
@@ -222,16 +254,16 @@ def update_zenodo_record(access_token = None,
             files = {'file': open(path_to_data+".zip", 'rb')}
         else:
             print("Not valid data")
-            # Delete existing record that we made earlier
-            delete_zenodo_record(access_token, id)
-            return
 
         r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
                            params=params,
                            data = data, 
                            files = files)
         r2.json()
-    #Add status code check
+        # Check that upload worked
+        if r2.status_code > 210:
+            print("Error happened during data upload")
+
 
     # Get id and doi
     id = str(r1.json()["id"])
