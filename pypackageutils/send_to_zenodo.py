@@ -188,6 +188,7 @@ def update_zenodo_record(access_token = None,
     # Connect to Zenodo
     headers = {"Content-Type": "application/json"}
     params = {'access_token': access_token}
+    files = None
     
     # Get existing metadata for id provided
     r_existing = requests.get('https://zenodo.org/api/deposit/depositions/%s' % id,
@@ -257,7 +258,6 @@ def update_zenodo_record(access_token = None,
         print("Error: Metadata not uploaded correctly")
         r1.json()
 
-
     # This adds new files. Does not replace existing files
     if path_to_data is not None: 
         if os.path.isfile(path_to_data):
@@ -278,6 +278,8 @@ def update_zenodo_record(access_token = None,
             files = {'file': open(destination, 'rb')}
         else:
             print("Not valid data")
+
+        print(files)
 
         r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
                            params=params,
