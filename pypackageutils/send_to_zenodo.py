@@ -12,8 +12,10 @@ License:  BSD 2-Clause, see LICENSE and DISCLAIMER files
 # TODO
     # Check if we can upload multiple files
     # path_to_data and metadata are optional in upload function. Need to specify this?
+        # test w/ making access token a requirement
+            # is this a requirement in get function
     # upload function: If metadata upload (r2) fails should we bail out of function?
-    # Delete and update functions: Should ID be str?
+    # Delete and update functions: Should ID be str? if statement if an integer 
 
 import requests
 import json
@@ -100,7 +102,17 @@ def upload_zenodo_record(access_token = None,
             files = {'file': open(path_to_data, 'rb')} 
         # If path_to_data is a directory, zip it first and then read it in
         elif os.path.isdir(path_to_data): 
-            shutil.make_archive(path_to_data, "zip", path_to_data) # Zip
+            def make_archive(source, destination):
+                base = os.path.basename(destination)
+                name = base.split('.')[0]
+                format = base.split('.')[1]
+                archive_from = os.path.dirname(source)
+                archive_to = os.path.basename(source.strip(os.sep))
+                shutil.make_archive(name, format, archive_from, archive_to)
+                #shutil.move('%s.%s'%(name,format), destination)
+
+            make_archive(source = path_to_data, destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip')
+
             files = {'file': open(path_to_data+".zip", 'rb')}
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
