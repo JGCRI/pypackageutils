@@ -111,9 +111,9 @@ def upload_zenodo_record(access_token = None,
                 shutil.make_archive(name, format, archive_from, archive_to)
                 #shutil.move('%s.%s'%(name,format), destination)
 
-            make_archive(source = path_to_data, destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip')
-
-            files = {'file': open(path_to_data+".zip", 'rb')}
+            destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
+            make_archive(source = path_to_data, destination = destination)
+            files = {'file': open(destination, 'rb')}
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
             print("Data in path_to_data must be either a file or folder")
@@ -262,8 +262,18 @@ def update_zenodo_record(access_token = None,
             files = {'file': open(path_to_data, 'rb')} 
         # If path is a folder, zip it first
         elif os.path.isdir(path_to_data): 
-            shutil.make_archive(path_to_data, "zip", path_to_data) # Zip
-            files = {'file': open(path_to_data+".zip", 'rb')}
+            def make_archive(source, destination):
+                base = os.path.basename(destination)
+                name = base.split('.')[0]
+                format = base.split('.')[1]
+                archive_from = os.path.dirname(source)
+                archive_to = os.path.basename(source.strip(os.sep))
+                shutil.make_archive(name, format, archive_from, archive_to)
+                #shutil.move('%s.%s'%(name,format), destination)
+
+            destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
+            make_archive(source = path_to_data, destination = destination)
+            files = {'file': open(destination, 'rb')}
         else:
             print("Not valid data")
 
