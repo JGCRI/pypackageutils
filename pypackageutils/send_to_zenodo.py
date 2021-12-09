@@ -193,6 +193,8 @@ def update_zenodo_record(access_token = None,
     r_existing = requests.get('https://zenodo.org/api/deposit/depositions/%s' % id,
                               params = {'access_token': access_token})
     metadata_existing = r_existing.json()['metadata']
+    if (metadata == None):
+        metadata = metadata_existing
 
     # If new metadata is path to csv file, convert it to python dictionary
     if type(metadata) == str and "csv" in metadata: #Check if path to csv
