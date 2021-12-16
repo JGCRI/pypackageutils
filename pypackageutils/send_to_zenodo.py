@@ -102,17 +102,8 @@ def upload_zenodo_record(access_token = None,
             files = {'file': open(path_to_data, 'rb')} 
         # If path_to_data is a directory, zip it first and then read it in
         elif os.path.isdir(path_to_data): 
-            def make_archive(source, destination):
-                base = os.path.basename(destination)
-                name = base.split('.')[0]
-                format = base.split('.')[1]
-                archive_from = os.path.dirname(source)
-                archive_to = os.path.basename(source.strip(os.sep))
-                shutil.make_archive(name, format, archive_from, archive_to)
-                #shutil.move('%s.%s'%(name,format), destination)
-
             destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
-            make_archive(source = path_to_data, destination = destination)
+            shutil.make_archive(os.path.basename(path_to_data), 'zip', path_to_data, destination)
             files = {'file': open(destination, 'rb')}
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
@@ -264,17 +255,8 @@ def update_zenodo_record(access_token = None,
             files = {'file': open(path_to_data, 'rb')} 
         # If path is a folder, zip it first
         elif os.path.isdir(path_to_data): 
-            def make_archive(source, destination):
-                base = os.path.basename(destination)
-                name = base.split('.')[0]
-                format = base.split('.')[1]
-                archive_from = os.path.dirname(source)
-                archive_to = os.path.basename(source.strip(os.sep))
-                shutil.make_archive(name, format, archive_from, archive_to)
-                #shutil.move('%s.%s'%(name,format), destination)
-
             destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
-            make_archive(source = path_to_data, destination = destination)
+            shutil.make_archive(os.path.basename(path_to_data), 'zip', path_to_data, destination)
             files = {'file': open(destination, 'rb')}
         else:
             print("Not valid data")
