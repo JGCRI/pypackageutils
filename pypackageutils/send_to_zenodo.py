@@ -102,9 +102,12 @@ def upload_zenodo_record(access_token = None,
             files = {'file': open(path_to_data, 'rb')} 
         # If path_to_data is a directory, zip it first and then read it in
         elif os.path.isdir(path_to_data): 
-            destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
-            shutil.make_archive(os.path.basename(path_to_data), 'zip', path_to_data, destination)
-            files = {'file': open(destination, 'rb')}
+            # Creates a zip folder in current working directory
+            name = os.path.basename(path_to_data)
+            archive_from = os.path.dirname(path_to_data)
+            archive_to = os.path.basename(path_to_data.strip(os.sep))
+            shutil.make_archive(name, 'zip', archive_from, archive_to)            
+            
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
             print("Data in path_to_data must be either a file or folder")
@@ -113,13 +116,13 @@ def upload_zenodo_record(access_token = None,
             return
 
         # Upload the file or zipped folder
-        r2 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
+        r3 = requests.post('https://zenodo.org/api/deposit/depositions/%s/files' % id,
                             params=params,
                             data = data,
                             files = files)
 
         # Check that upload worked
-        if r2.status_code > 210:
+        if r3.status_code > 210:
             print("Error happened during submission, status code: " + str(r2.status_code))
             # Delete existing record that we made earlier and exit function
             delete_zenodo_record(access_token, id)
