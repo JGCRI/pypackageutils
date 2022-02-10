@@ -105,9 +105,10 @@ def upload_zenodo_record(access_token = None,
             # Creates a zip folder in current working directory
             name = os.path.basename(path_to_data)
             archive_from = os.path.dirname(path_to_data)
+            if archive_from == '': archive_from = os.getcwd()
             archive_to = os.path.basename(path_to_data.strip(os.sep))
-            shutil.make_archive(name, 'zip', archive_from, archive_to)            
-            
+            shutil.make_archive(name, 'zip', archive_from, archive_to)
+            files = {'file': open(path_to_data + 'zip', 'rb')}
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
             print("Data in path_to_data must be either a file or folder")
@@ -253,14 +254,18 @@ def update_zenodo_record(access_token = None,
         r1.json()
 
     # This adds new files. Does not replace existing files
-    if path_to_data is not None: 
+    if path_to_data is not None:
         if os.path.isfile(path_to_data):
             files = {'file': open(path_to_data, 'rb')} 
         # If path is a folder, zip it first
         elif os.path.isdir(path_to_data): 
-            destination = os.getcwd() + '/' + os.path.basename(path_to_data) + '.zip'
-            shutil.make_archive(os.path.basename(path_to_data), 'zip', path_to_data, destination)
-            files = {'file': open(destination, 'rb')}
+            # Creates a zip folder in current working directory
+            name = os.path.basename(path_to_data)
+            archive_from = os.path.dirname(path_to_data)
+            if archive_from == '': archive_from = os.getcwd()
+            archive_to = os.path.basename(path_to_data.strip(os.sep))
+            shutil.make_archive(name, 'zip', archive_from, archive_to)
+            files = {'file': open(path_to_data + '.zip', 'rb')}
         else:
             print("Not valid data")
 

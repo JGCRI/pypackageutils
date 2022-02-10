@@ -27,7 +27,7 @@ setup(
     python_requires='>=3.6.*, <4',
     install_requires=[
         "requests>=2.20.0",
-        "pandas>=1.2.4"
+        "pandas>=1.1.5"
     ],
     include_package_data=True
 )
