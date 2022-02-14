@@ -26,8 +26,8 @@ setup(
     long_description_content_type="text/markdown",
     python_requires='>=3.6.*, <4',
     install_requires=[
-        "requests>=2.20.0",
-        "pandas>=1.1.5"
+        "requests",
+        "pandas"
     ],
     include_package_data=True
 )
