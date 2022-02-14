@@ -108,7 +108,7 @@ def upload_zenodo_record(access_token = None,
             if archive_from == '': archive_from = os.getcwd()
             archive_to = os.path.basename(path_to_data.strip(os.sep))
             shutil.make_archive(name, 'zip', archive_from, archive_to)
-            files = {'file': open(path_to_data + 'zip', 'rb')}
+            files = {'file': open(path_to_data + '.zip', 'rb')}
         # If path_to_data is neither a file or directory, delete initial upload and exit function
         else:
             print("Data in path_to_data must be either a file or folder")
