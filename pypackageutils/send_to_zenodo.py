@@ -304,3 +304,55 @@ def get_zenodo_record(access_token = None,
                               'q' : queries})
 
     print(json.dumps(r.json(), indent=2))
+
+
+def upload_zenodo_bash(access_token = None,
+                       id = None,
+                       path_to_data = None):
+    """Upload large files to Zenodo on bash
+
+    If data to upload is a directory, this function will zip it first,
+    otherwise just upload the single file with the corresponding metadata
+
+    :param access_token: Access token to Zenodo Community
+    :type access_token: str
+
+    :param path_to_data: Path to file or folder to upload
+    :type path_to_data: str
+
+    :param id: Unique zenodo record ID (can be found in URL)
+    :type id: str
+
+    """
+
+    # Zip files if a folder is provided
+    if path_to_data is not None:
+        if os.path.isfile(path_to_data):
+            path_to_data_send = path_to_data
+            # If path is a folder, zip it first
+        elif os.path.isdir(path_to_data):
+            # Creates a zip folder in current working directory
+            name = os.path.basename(path_to_data)
+            archive_from = os.path.dirname(path_to_data)
+            if archive_from == '': archive_from = os.getcwd()
+            archive_to = os.path.basename(path_to_data.strip(os.sep))
+            shutil.make_archive(name, 'zip', archive_from, archive_to)
+            path_to_data_send = os.getcwd() + '/' + name + '.zip'
+        else:
+            print("Not valid data")
+
+        print(f'Sending files {path_to_data_send}')
+
+    cmd = f"""
+    DEPOSITION=$( echo "{id}" | sed 's+^http[s]*://zenodo.org/deposit/++g' )
+    FILEPATH="{path_to_data_send}"
+    FILENAME=$(echo $FILEPATH | sed 's+.*/++g')
+
+    BUCKET=$(curl https://zenodo.org/api/deposit/depositions/"$DEPOSITION"?access_token="{access_token}" | jq --raw-output .links.bucket)
+
+    curl --progress-bar -o /dev/null --upload-file "$FILEPATH" $BUCKET/"$FILENAME"?access_token="{access_token}"
+    """
+
+    os.system(cmd)
+
+    return cmd
