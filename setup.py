@@ -27,7 +27,6 @@ setup(
     python_requires='>=3.6.*, <4',
     install_requires=[
         "requests",
-        "requests_toolbelt",
         "pandas"
     ],
     include_package_data=True
